@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: abp-postgres
+    environment:
+      POSTGRES_USER: gzzang
+      POSTGRES_PASSWORD: zz123123
+      POSTGRES_DB: abp_anrdpro_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gzzang -d abp_anrdpro_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  dbmigrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbmigrator
+    container_name: abp-dbmigrator
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=abp_anrdpro_db;Username=gzzang;******;"
+      OpenIddict__Applications__MyProject_App__ClientId: "MyProject_App"
+      OpenIddict__Applications__MyProject_App__RootUrl: "http://localhost:8000"
+      OpenIddict__Applications__MyProject_Swagger__ClientId: "MyProject_Swagger"
+      OpenIddict__Applications__MyProject_Swagger__RootUrl: "http://localhost:44358"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: abp-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dbmigrator:
+        condition: service_completed_successfully
+    ports:
+      - "44358:80"
+    environment:
+      App__SelfUrl: "http://localhost:44358"
+      App__CorsOrigins: "http://localhost:8000"
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=abp_anrdpro_db;Username=gzzang;******;"
+      AuthServer__Authority: "http://localhost:44358"
+      AuthServer__RequireHttpsMetadata: "false"
+      OpenIddict__Applications__MyProject_App__ClientId: "MyProject_App"
+      OpenIddict__Applications__MyProject_App__RootUrl: "http://localhost:8000"
+      OpenIddict__Applications__MyProject_Swagger__ClientId: "MyProject_Swagger"
+      OpenIddict__Applications__MyProject_Swagger__RootUrl: "http://localhost:44358"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        OIDC_AUTHORITY: "http://localhost:44358"
+        OIDC_CLIENT_ID: "MyProject_App"
+    container_name: abp-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8000:80"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-pro-demo
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: my-pro-demo/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run test
+
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MyProject
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore MyProject.slnx
+
+      - name: Build
+        run: dotnet build MyProject.slnx --no-restore -c Release
+
+      - name: Test
+        run: dotnet test MyProject.slnx --no-build -c Release --verbosity normal
+
+  docker:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+    needs: [frontend, backend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build frontend image
+        run: docker build -f Dockerfile.frontend -t abp-frontend .
+
+      - name: Build backend image
+        run: docker build -f Dockerfile.backend -t abp-backend .
+
+      - name: Build dbmigrator image
+        run: docker build -f Dockerfile.dbmigrator -t abp-dbmigrator .
