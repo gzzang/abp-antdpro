@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MyProject.Authors;
 using Shouldly;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Modularity;
 using Volo.Abp.Validation;
 using Xunit;
@@ -13,10 +15,12 @@ public abstract class BookAppService_Tests<TStartupModule> : MyProjectApplicatio
     where TStartupModule : IAbpModule
 {
     private readonly IBookAppService _bookAppService;
+    private readonly IRepository<Author, Guid> _authorRepository;
 
     protected BookAppService_Tests()
     {
         _bookAppService = GetRequiredService<IBookAppService>();
+        _authorRepository = GetRequiredService<IRepository<Author, Guid>>();
     }
 
     [Fact]
@@ -35,11 +39,16 @@ public abstract class BookAppService_Tests<TStartupModule> : MyProjectApplicatio
     [Fact]
     public async Task Should_Create_A_Valid_Book()
     {
+        //Arrange
+        var author = await _authorRepository.GetListAsync();
+        var authorId = author.First().Id;
+
         //Act
         var result = await _bookAppService.CreateAsync(
             new CreateUpdateBookDto
             {
                 Name = "New test book 42",
+                AuthorId = authorId,
                 Price = 10,
                 PublishDate = DateTime.Now,
                 Type = BookType.ScienceFiction
