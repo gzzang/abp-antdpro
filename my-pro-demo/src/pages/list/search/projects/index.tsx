@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card, Col, Form, List, Row, Select, Typography } from 'antd';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 import type { FC } from 'react';
 import { useState } from 'react';
 import { AvatarList, StandardFormRow, TagSelect } from '@/components';

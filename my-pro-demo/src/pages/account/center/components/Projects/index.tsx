@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card, List } from 'antd';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 import React from 'react';
 import { AvatarList } from '@/components';
 import type { ListItemDataType } from '../../data.d';

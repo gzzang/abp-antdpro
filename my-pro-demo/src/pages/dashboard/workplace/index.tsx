@@ -4,6 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@umijs/max';
 import { Avatar, Card, Col, List, Row, Skeleton, Statistic } from 'antd';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 import type { FC } from 'react';
 import EditableLinkGroup from './components/EditableLinkGroup';
 import type { ActivitiesType, CurrentUser } from './data.d';

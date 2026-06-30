@@ -136,8 +136,13 @@ const Login: React.FC = () => {
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
+    const { getUser } = await import('@/utils/auth');
+    const user = await getUser();
+    if (user && !user.expired) {
+      const userInfo = {
+        name: user.profile.preferred_username || user.profile.name || user.profile.sub,
+        userid: user.profile.sub,
+      };
       startTransition(() => {
         setInitialState((s) => ({
           ...s,

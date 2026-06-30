@@ -19,7 +19,7 @@ const bookTypeOptions = Object.entries(BookTypeLabels).map(([value, label]) => (
 }));
 
 const BookList: React.FC = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentBook, setCurrentBook] = useState<BookDto | undefined>();
 
