@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY MyProject/NuGet.Config ./
+COPY MyProject/common.props ./
+COPY MyProject/src/ ./src/
+
+RUN dotnet restore src/MyProject.DbMigrator/MyProject.DbMigrator.csproj
+RUN dotnet publish src/MyProject.DbMigrator/MyProject.DbMigrator.csproj \
+    -c Release -o /app/publish --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "MyProject.DbMigrator.dll"]
