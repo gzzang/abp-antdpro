@@ -58,7 +58,7 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
         var configurationSection = Configuration.GetSection("OpenIddict:Applications");
 
 
-        // Console Test / Angular Client
+        // Ant Design Pro SPA Client
         
         var appClientId = configurationSection["MyProject_App:ClientId"];
         if (!appClientId.IsNullOrWhiteSpace())
@@ -69,19 +69,15 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 name: appClientId!,
                 type: OpenIddictConstants.ClientTypes.Public,
                 consentType: OpenIddictConstants.ConsentTypes.Implicit,
-                displayName: "Console Test / Angular Application",
+                displayName: "Ant Design Pro Application",
                 secret: null,
                 grantTypes: new List<string> {
                     OpenIddictConstants.GrantTypes.AuthorizationCode,
-                    OpenIddictConstants.GrantTypes.Password,
-                    OpenIddictConstants.GrantTypes.ClientCredentials,
-                    OpenIddictConstants.GrantTypes.RefreshToken,
-                    "LinkLogin",
-                    "Impersonation"
+                    OpenIddictConstants.GrantTypes.RefreshToken
                 },
                 scopes: commonScopes,
-                redirectUris: new List<string> { appClientRootUrl },
-                postLogoutRedirectUris: new List<string> { appClientRootUrl },
+                redirectUris: new List<string> { $"{appClientRootUrl}/oidc-callback" },
+                postLogoutRedirectUris: new List<string> { $"{appClientRootUrl}" },
                 clientUri: appClientRootUrl,
                 logoUri: "/images/clients/angular.svg"
             );

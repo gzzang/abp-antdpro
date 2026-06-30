@@ -232,5 +232,7 @@ export default defineConfig({
     __APP_VERSION__: require('./../package.json').version,
     __UMI_VERSION__: require('@umijs/max/package.json').version,
     __UTOO_VERSION__: require('@utoo/pack/package.json').version,
+    OIDC_AUTHORITY: process.env.OIDC_AUTHORITY || 'https://localhost:44358',
+    OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID || 'MyProject_App',
   },
 });

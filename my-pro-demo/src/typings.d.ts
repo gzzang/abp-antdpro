@@ -18,3 +18,6 @@ declare module 'mockjs';
 declare const __APP_VERSION__: string;
 declare const __UMI_VERSION__: string;
 declare const __UTOO_VERSION__: string;
+
+declare const OIDC_AUTHORITY: string;
+declare const OIDC_CLIENT_ID: string;
